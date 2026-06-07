@@ -4,17 +4,22 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from app.db.init_db import init_db
 from app.routers import auth, patients, reports
+import os
 
 app = FastAPI(title="MediReport Pro", version="2.0.0")
 
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        frontend_url,
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 Path("static").mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
