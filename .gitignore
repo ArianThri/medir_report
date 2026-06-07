@@ -1,0 +1,25 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env / secrets
+.env
+backend/.env
+frontend/.env
+
+# Database / local files
+backend/medireport.db
+backend/uploads/
+backend/app/uploads/
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
