@@ -582,7 +582,9 @@ function groupSourceNotes(notes = []) {
 }
 
 function LiveSourceNotesSection({ section }) {
-  const groups = groupSourceNotes(Array.isArray(section?.notes) ? section.notes : []);
+  const rawNotes = Array.isArray(section?.notes) ? section.notes : [];
+  const fallbackContent = String(section?.content || "").split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  const groups = groupSourceNotes(rawNotes.length ? rawNotes : fallbackContent.map((text) => ({ section: "Source Detail", text })));
   return (
     <section className="live-section-block live-source-notes-block">
       <div className="section-drag-tools no-print"><Icon name="grip" size={18} /></div>
@@ -3825,6 +3827,7 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [aiBusy, setAiBusy] = useState(false);
+  const [draggingSectionIndex, setDraggingSectionIndex] = useState(null);
 
   function normaliseReportResponse(data) {
     return data?.report || data;
@@ -4239,22 +4242,26 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
               onChange={(value) => setEditable({ ...editable, doctor_opinion: value })}
             />
 
-            {(editable.sections || []).filter((section) => !["source_text", "images"].includes(String(section.type || "").toLowerCase())).map((section, index) => (
-              <EditableReportBlock
-                key={section.id || index}
-                title={section.title || `Section ${index + 1}`}
-                value={section.content || ""}
-                placeholder={`Click here to write ${section.title || "this section"}...`}
-                dragHandleProps={{
-                  onDragStart: (e) => handleSectionDragStart(index, e),
-                  onDragEnd: () => setDraggingSectionIndex(null),
-                }}
-                onDropSection={(e) => handleSectionDrop(index, e)}
-                onChange={(value) => updateSection(index, "content", value)}
-              >
-                {section.type === "tables" ? <div className="live-table-preview" dangerouslySetInnerHTML={{ __html: renderLabTablesHtml(section, (v) => String(v ?? "").replace(/[&<>\"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;", "'": "&#039;" }[c]))) }} /> : null}
-              </EditableReportBlock>
-            ))}
+            {(editable.sections || []).map((section, index) => {
+              const sectionType = String(section?.type || "").toLowerCase();
+              if (["source_text", "images"].includes(sectionType)) return null;
+              if (sectionType === "tables") return <LiveStructuredTablesSection key={section.id || index} section={section} />;
+              if (sectionType === "source_notes") return <LiveSourceNotesSection key={section.id || index} section={section} />;
+              return (
+                <EditableReportBlock
+                  key={section.id || index}
+                  title={section.title || `Section ${index + 1}`}
+                  value={section.content || ""}
+                  placeholder={`Click here to write ${section.title || "this section"}...`}
+                  dragHandleProps={{
+                    onDragStart: (e) => handleSectionDragStart(index, e),
+                    onDragEnd: () => setDraggingSectionIndex(null),
+                  }}
+                  onDropSection={(e) => handleSectionDrop(index, e)}
+                  onChange={(value) => updateSection(index, "content", value)}
+                />
+              );
+            })}
             <section className="attached-media-block">
               <h3>Attached Media <span>(Images)</span></h3>
               <div className="attached-media-grid">
@@ -4480,24 +4487,27 @@ function AutoResizeTextarea({ id, value, placeholder, onChange }) {
   }
 
   return (
-    <textarea
-      ref={textareaRef}
-      id={id}
-      className="rich-report-textarea"
-      value={draft}
-      placeholder={placeholder}
-      rows={1}
-      dir="ltr"
-      spellCheck="true"
-      autoCapitalize="sentences"
-      onFocus={(event) => { focusedRef.current = true; rememberSelection(event); }}
-      onBlur={() => { focusedRef.current = false; }}
-      onInput={handleInput}
-      onSelect={rememberSelection}
-      onClick={rememberSelection}
-      onKeyUp={rememberSelection}
-      onChange={() => {}}
-    />
+    <>
+      <textarea
+        ref={textareaRef}
+        id={id}
+        className="rich-report-textarea"
+        value={draft}
+        placeholder={placeholder}
+        rows={1}
+        dir="ltr"
+        spellCheck="true"
+        autoCapitalize="sentences"
+        onFocus={(event) => { focusedRef.current = true; rememberSelection(event); }}
+        onBlur={() => { focusedRef.current = false; }}
+        onInput={handleInput}
+        onSelect={rememberSelection}
+        onClick={rememberSelection}
+        onKeyUp={rememberSelection}
+        onChange={() => {}}
+      />
+      <div className="textarea-print-value" aria-hidden="true">{draft || ""}</div>
+    </>
   );
 }
 

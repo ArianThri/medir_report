@@ -2146,9 +2146,9 @@ button.section-pill { grid-template-columns: 22px 1fr auto; }
   color: #9c7525;
   text-transform: uppercase;
   letter-spacing: .05em;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
 }
 .live-source-note-list p {
   margin: 0;
@@ -2192,7 +2192,8 @@ button.section-pill { grid-template-columns: 22px 1fr auto; }
 }
 .source-detail-group li,
 .source-note-list.grouped li {
-  line-height: 1.5;
+  font-size: 15.5px;
+  line-height: 1.66;
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -3313,7 +3314,7 @@ button.section-pill { grid-template-columns: 22px 1fr auto; }
 
   .source-detail-group span {
     color: #a57519 !important;
-    font-size: 8px !important;
+    font-size: 8.6px !important;
     letter-spacing: .12em !important;
     text-transform: uppercase !important;
     font-weight: 900 !important;
@@ -9271,19 +9272,43 @@ body.image-viewer-open { overflow: hidden; }
   writing-mode: horizontal-tb !important;
   display: block;
   width: 100%;
-  min-height: 92px;
-  resize: vertical;
+  min-height: 108px;
+  resize: none;
   overflow: hidden;
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  -webkit-appearance: none;
+  appearance: none;
+  scrollbar-width: none;
   border: 1px dashed rgba(201, 148, 43, 0.55) !important;
   border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.72) !important;
+  background: rgba(255, 255, 255, 0.84) !important;
   color: #1d1b17 !important;
-  font-size: 15px;
-  line-height: 1.65;
-  padding: 14px 16px !important;
+  font-size: 16.5px;
+  line-height: 1.72;
+  padding: 16px 18px !important;
   caret-color: #111 !important;
   white-space: pre-wrap;
   tab-size: 2;
+}
+
+.rich-report-textarea::-webkit-scrollbar,
+.live-section-block textarea.rich-report-textarea::-webkit-scrollbar,
+.report-paper textarea.rich-report-textarea::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.rich-report-textarea::-webkit-resizer,
+.live-section-block textarea.rich-report-textarea::-webkit-resizer,
+.report-paper textarea.rich-report-textarea::-webkit-resizer,
+.rich-report-textarea::-webkit-scrollbar-button,
+.live-section-block textarea.rich-report-textarea::-webkit-scrollbar-button,
+.report-paper textarea.rich-report-textarea::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .rich-report-textarea:focus,
@@ -10359,5 +10384,521 @@ body.image-viewer-open { overflow: hidden; }
 
   .simple-login-card strong {
     font-size: 22px;
+  }
+}
+
+/* v9.2 final print/PDF completeness fix: no clipped text, tables or source details */
+.textarea-print-value {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body,
+  #root,
+  .app-shell,
+  .workspace,
+  .content-panel,
+  .report-builder-content,
+  .reference-builder-grid,
+  .live-editor-card,
+  #printable-report {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    display: block !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .sidebar,
+  .builder-topbar,
+  .builder-left,
+  .live-editor-head,
+  .editor-toolbar,
+  .editor-statusbar,
+  .section-drag-tools,
+  .upload-logo,
+  .image-lightbox,
+  .toast,
+  .no-print,
+  .print-only,
+  .luxury-print-document,
+  .merged-pdf-frame {
+    display: none !important;
+  }
+
+  .report-paper {
+    display: block !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .cover-page,
+  .nuvia-cover-page {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 8mm !important;
+    background: #fffdf8 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    overflow: visible !important;
+  }
+
+  .cover-border,
+  .nuvia-cover-border {
+    min-height: 281mm !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .report-brand,
+  .report-title-row,
+  .patient-profile-card,
+  .live-section-block:not(.live-structured-block):not(.live-source-notes-block):not(.source-image-panels-block),
+  .attached-media-block:not(.source-image-panels-block) {
+    width: 180mm !important;
+    max-width: 180mm !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .live-section-block {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .live-section-block:not(.live-structured-block):not(.live-source-notes-block):not(.source-image-panels-block),
+  .attached-media-block:not(.source-image-panels-block) {
+    border: 1px solid #dec58d !important;
+    border-radius: 8px !important;
+    background: #fffefa !important;
+    padding: 6mm !important;
+    margin-top: 7mm !important;
+    margin-bottom: 7mm !important;
+  }
+
+  .live-section-block h3,
+  .attached-media-block h3,
+  .merged-source-title h3 {
+    font-family: Georgia, 'Times New Roman', serif !important;
+    color: #17140f !important;
+  }
+
+  .rich-report-textarea {
+    display: none !important;
+  }
+
+  .textarea-print-value {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #10110d !important;
+    font-size: 12.6px !important;
+    line-height: 1.68 !important;
+    padding: 0 !important;
+    -webkit-text-fill-color: #10110d !important;
+  }
+
+  .live-structured-block,
+  .live-source-notes-block,
+  .source-image-panels-block,
+  .merged-source-preview {
+    width: 180mm !important;
+    max-width: 180mm !important;
+    min-height: auto !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 18mm 10mm 14mm !important;
+    border: 1.2px solid #d7b46f !important;
+    border-radius: 0 !important;
+    background:
+      linear-gradient(90deg, #d7b46f 0 17mm, transparent 17mm) top left / 27mm .35mm no-repeat,
+      linear-gradient(180deg, #d7b46f 0 17mm, transparent 17mm) top left / .35mm 27mm no-repeat,
+      linear-gradient(270deg, #d7b46f 0 17mm, transparent 17mm) top right / 27mm .35mm no-repeat,
+      linear-gradient(180deg, #d7b46f 0 17mm, transparent 17mm) top right / .35mm 27mm no-repeat,
+      linear-gradient(90deg, #d7b46f 0 17mm, transparent 17mm) bottom left / 27mm .35mm no-repeat,
+      linear-gradient(0deg, #d7b46f 0 17mm, transparent 17mm) bottom left / .35mm 27mm no-repeat,
+      linear-gradient(270deg, #d7b46f 0 17mm, transparent 17mm) bottom right / 27mm .35mm no-repeat,
+      linear-gradient(0deg, #d7b46f 0 17mm, transparent 17mm) bottom right / .35mm 27mm no-repeat,
+      #fffdf8 !important;
+    box-shadow:
+      inset 0 0 0 2.2mm #fff8e8,
+      inset 0 0 0 3.1mm rgba(215, 180, 111, .22),
+      inset 0 0 0 5.2mm #fffdf8 !important;
+    break-before: page !important;
+    page-break-before: always !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  .live-table-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 0 8mm !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .live-table-wrap::before,
+  .live-table-wrap::after,
+  .live-source-notes-block::before,
+  .source-image-panels-block::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  .live-table-wrap h4,
+  .live-source-notes-block > h3,
+  .source-image-panels-block > h3 {
+    display: block !important;
+    text-align: center !important;
+    margin: 0 0 6mm !important;
+    padding: 0 0 3mm !important;
+    border-bottom: 1px solid #d9bd7d !important;
+    font-family: Georgia, 'Times New Roman', serif !important;
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+    font-weight: 900 !important;
+    letter-spacing: .06em !important;
+    text-transform: uppercase !important;
+    color: #17140f !important;
+  }
+
+  .live-lab-table,
+  .live-table-preview table,
+  table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border: 1px solid #d8bd80 !important;
+    background: #fffefa !important;
+    font-size: 9.2px !important;
+    line-height: 1.3 !important;
+    page-break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  th,
+  td,
+  .live-lab-table th,
+  .live-lab-table td {
+    padding: 4px 4.5px !important;
+    border: 1px solid #e4d0a0 !important;
+    color: #10110d !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    vertical-align: top !important;
+  }
+
+  th,
+  .live-lab-table th {
+    background: #fff4d8 !important;
+    color: #75551d !important;
+    text-transform: uppercase !important;
+    letter-spacing: .06em !important;
+    font-size: 7.6px !important;
+    font-weight: 900 !important;
+  }
+
+  .source-detail-group,
+  .live-source-note-list.grouped div {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 0 4mm !important;
+    padding: 4mm !important;
+    border: 1px solid #dec58d !important;
+    border-radius: 7px !important;
+    background: #fffefa !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    overflow: visible !important;
+  }
+
+  .source-detail-group li,
+  .source-note-list.grouped li {
+    font-size: 11.4px !important;
+    line-height: 1.52 !important;
+    color: #111 !important;
+    margin-bottom: 1.4mm !important;
+  }
+
+  .source-panel-grid,
+  .merged-page-gallery,
+  .attached-media-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6mm !important;
+    overflow: visible !important;
+  }
+
+  .source-panel-grid figure,
+  .merged-page-card,
+  .attached-media-thumb,
+  .image-placeholder {
+    border: 1px solid #dec58d !important;
+    background: #fffefa !important;
+    padding: 4mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    overflow: hidden !important;
+  }
+
+  .source-panel-grid img,
+  .merged-page-gallery img,
+  .attached-media-thumb img {
+    width: 100% !important;
+    height: 82mm !important;
+    max-height: 82mm !important;
+    object-fit: contain !important;
+    background: #080808 !important;
+  }
+
+  .merged-source-preview {
+    display: block !important;
+  }
+}
+
+
+/* v3 cleanup: remove annoying triangle/honeycomb decorations from cover and examinations pages,
+   and slightly enlarge report typography for better readability. */
+@media print {
+  .report-paper > .nuvia-cover-page .nuvia-honeycomb,
+  .report-paper > .nuvia-exams-page .nuvia-honeycomb,
+  .nuvia-cover-page .nuvia-honeycomb,
+  .nuvia-exams-page .nuvia-honeycomb {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    background: none !important;
+  }
+
+  .report-paper > .nuvia-cover-page .nuvia-bg-arc,
+  .report-paper > .nuvia-exams-page .nuvia-bg-arc {
+    opacity: .22 !important;
+  }
+
+  .report-paper > .nuvia-cover-page .nuvia-cover-footer p,
+  .report-paper > .nuvia-exams-page .nuvia-cover-footer p,
+  .nuvia-cover-footer p {
+    font-size: 8.8pt !important;
+    letter-spacing: .18em !important;
+  }
+
+  .report-paper > .nuvia-exams-page .nuvia-exams-page-header h1 {
+    font-size: 21pt !important;
+  }
+
+  .report-paper > .nuvia-exams-page .nuvia-exams-page-header p {
+    font-size: 9pt !important;
+  }
+
+  .report-paper > .nuvia-exams-page .exam-chip b,
+  .nuvia-exams-page .exam-chip b {
+    font-size: 12.6px !important;
+    line-height: 1.35 !important;
+  }
+
+  .report-paper > .nuvia-exams-page .exam-chip span,
+  .nuvia-exams-page .exam-chip span {
+    font-size: 10.6px !important;
+    line-height: 1.45 !important;
+  }
+
+  .live-source-note-list,
+  .source-note-list.grouped,
+  .source-detail-group,
+  .source-note-list.grouped div {
+    font-size: 12px !important;
+  }
+
+  .source-detail-group li,
+  .source-note-list.grouped li,
+  .live-source-note-list li,
+  .live-source-note-list p {
+    font-size: 11.8px !important;
+    line-height: 1.58 !important;
+  }
+
+  .live-source-note-list span,
+  .source-detail-group span {
+    font-size: 9px !important;
+  }
+
+  .live-section-block h3,
+  .attached-media-block h3,
+  .merged-source-title h3,
+  .live-table-wrap h4,
+  .live-source-notes-block > h3,
+  .source-image-panels-block > h3 {
+    font-size: 17px !important;
+  }
+
+  .textarea-print-value {
+    font-size: 13px !important;
+    line-height: 1.72 !important;
+  }
+
+  .live-lab-table,
+  .live-table-preview table,
+  table {
+    font-size: 9.6px !important;
+    line-height: 1.34 !important;
+  }
+
+  th,
+  .live-lab-table th {
+    font-size: 7.9px !important;
+  }
+}
+
+/* Slightly larger live editor text for easier on-screen reading too */
+.live-source-note-list p,
+.source-detail-group li,
+.source-note-list.grouped li {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.live-source-note-list span,
+.source-detail-group span {
+  font-size: 12.5px;
+}
+
+
+/* v4 live report cleanup: remove the unwanted decorative triangle/honeycomb pattern
+   from the on-screen Live Report as well as print/PDF. */
+.report-paper .nuvia-honeycomb,
+.report-paper > .nuvia-cover-page .nuvia-honeycomb,
+.report-paper > .nuvia-exams-page .nuvia-honeycomb,
+.nuvia-cover-page .nuvia-honeycomb,
+.nuvia-exams-page .nuvia-honeycomb {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  background: none !important;
+  background-image: none !important;
+}
+
+/* Keep the live examinations page cleaner and stop decorative elements from sitting over the content. */
+.report-paper > .nuvia-exams-page .nuvia-bg-arc,
+.nuvia-exams-page .nuvia-bg-arc {
+  opacity: .16 !important;
+  pointer-events: none !important;
+}
+
+/* Live page readability: slightly larger text without breaking the A4 layout. */
+.report-paper {
+  font-size: 15.5px;
+}
+
+.report-paper .nuvia-exams-page-header h1,
+.report-paper > .nuvia-exams-page .nuvia-exams-page-header h1 {
+  font-size: clamp(26px, 2.35vw, 34px) !important;
+  line-height: 1.12 !important;
+}
+
+.report-paper .nuvia-exams-page-header p,
+.report-paper > .nuvia-exams-page .nuvia-exams-page-header p {
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.report-paper .exam-chip b,
+.report-paper > .nuvia-exams-page .exam-chip b {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+.report-paper .exam-chip span,
+.report-paper > .nuvia-exams-page .exam-chip span {
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.report-paper .rich-report-textarea,
+.report-paper .textarea-print-value,
+.report-paper .source-detail-group li,
+.report-paper .source-note-list.grouped li,
+.report-paper .live-source-note-list p,
+.report-paper .live-source-note-list li {
+  font-size: 16.5px !important;
+  line-height: 1.72 !important;
+}
+
+.report-paper .live-source-note-list span,
+.report-paper .source-detail-group span {
+  font-size: 12.5px !important;
+}
+
+@media print {
+  .report-paper .nuvia-honeycomb,
+  .report-paper > .nuvia-cover-page .nuvia-honeycomb,
+  .report-paper > .nuvia-exams-page .nuvia-honeycomb,
+  .nuvia-cover-page .nuvia-honeycomb,
+  .nuvia-exams-page .nuvia-honeycomb {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    background: none !important;
+    background-image: none !important;
   }
 }
