@@ -10902,3 +10902,189 @@ body.image-viewer-open { overflow: hidden; }
     background-image: none !important;
   }
 }
+
+/* v9.3 print/PDF repair: remove editor controls and prevent clipped/scrolling source details
+   This block is intentionally placed at the end so it overrides older report-builder print rules only. */
+@media print {
+  .no-print,
+  .section-drag-tools,
+  .section-drag-tools *,
+  .section-drag-handle,
+  .mouse-drag-handle,
+  .image-zoom-btn,
+  .add-image-card,
+  .mini-download-link,
+  .merged-pdf-frame,
+  .report-writing-toolbar,
+  .editor-toolbar,
+  .live-editor-head,
+  .editor-statusbar {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  .report-paper,
+  .report-paper *,
+  .live-editor-card,
+  #printable-report {
+    scrollbar-width: none !important;
+  }
+
+  .report-paper *::-webkit-scrollbar,
+  .live-editor-card *::-webkit-scrollbar,
+  #printable-report *::-webkit-scrollbar,
+  textarea::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
+  textarea,
+  .rich-report-textarea,
+  .live-section-block textarea,
+  .report-paper textarea,
+  .source-detail-group,
+  .source-detail-group *,
+  .live-source-note-list,
+  .source-note-list.grouped,
+  .live-source-notes-block,
+  .live-source-notes-block *,
+  .source-note-list.grouped * {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  .rich-report-textarea,
+  .live-section-block textarea.rich-report-textarea,
+  .report-paper textarea.rich-report-textarea {
+    display: none !important;
+  }
+
+  .textarea-print-value {
+    display: block !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #10110d !important;
+    -webkit-text-fill-color: #10110d !important;
+  }
+
+  .live-source-notes-block,
+  .source-detail-group,
+  .source-detail-group ul,
+  .source-detail-group li,
+  .source-note-list.grouped,
+  .source-note-list.grouped div,
+  .source-note-list.grouped ul,
+  .source-note-list.grouped li {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .source-detail-group,
+  .live-source-note-list.grouped div,
+  .source-note-list.grouped div {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 4mm !important;
+  }
+
+  .source-detail-group ul,
+  .source-note-list.grouped ul {
+    display: block !important;
+    margin: 0 !important;
+    padding-left: 5mm !important;
+  }
+
+  .source-detail-group li,
+  .source-note-list.grouped li,
+  .live-source-note-list li {
+    display: list-item !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+}
+
+/* Same cleanup for any HTML-to-PDF export wrapper. It does not rely on @media print. */
+.pdf-export-root .no-print,
+.pdf-export-root .section-drag-tools,
+.pdf-export-root .section-drag-tools *,
+.pdf-export-root .section-drag-handle,
+.pdf-export-root .mouse-drag-handle,
+.pdf-export-root .image-zoom-btn,
+.pdf-export-root .add-image-card,
+.pdf-export-root .mini-download-link,
+.pdf-export-root .merged-pdf-frame,
+.pdf-export-root .report-writing-toolbar,
+.pdf-export-root .editor-toolbar,
+.pdf-export-root .live-editor-head,
+.pdf-export-root .editor-statusbar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.pdf-export-root textarea,
+.pdf-export-root .rich-report-textarea,
+.pdf-export-root .live-section-block textarea,
+.pdf-export-root .source-detail-group,
+.pdf-export-root .source-detail-group *,
+.pdf-export-root .live-source-note-list,
+.pdf-export-root .source-note-list.grouped,
+.pdf-export-root .live-source-notes-block,
+.pdf-export-root .live-source-notes-block *,
+.pdf-export-root .source-note-list.grouped * {
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  scrollbar-width: none !important;
+}
+
+.pdf-export-root *::-webkit-scrollbar,
+.pdf-export-root textarea::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.pdf-export-root .rich-report-textarea,
+.pdf-export-root .live-section-block textarea.rich-report-textarea,
+.pdf-export-root .report-paper textarea.rich-report-textarea {
+  display: none !important;
+}
+
+.pdf-export-root .textarea-print-value {
+  display: block !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #10110d !important;
+  -webkit-text-fill-color: #10110d !important;
+}
+
+.pdf-export-root .live-source-notes-block,
+.pdf-export-root .source-detail-group,
+.pdf-export-root .source-detail-group ul,
+.pdf-export-root .source-detail-group li,
+.pdf-export-root .source-note-list.grouped,
+.pdf-export-root .source-note-list.grouped div,
+.pdf-export-root .source-note-list.grouped ul,
+.pdf-export-root .source-note-list.grouped li {
+  break-inside: auto !important;
+  page-break-inside: auto !important;
+}
+
