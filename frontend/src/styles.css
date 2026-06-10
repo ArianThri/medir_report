@@ -10903,198 +10903,67 @@ body.image-viewer-open { overflow: hidden; }
   }
 }
 
-/* v9.3 print/PDF repair: remove editor controls and prevent clipped/scrolling source details
-   This block is intentionally placed at the end so it overrides older report-builder print rules only. */
-@media print {
-  .no-print,
-  .section-drag-tools,
-  .section-drag-tools *,
-  .section-drag-handle,
-  .mouse-drag-handle,
-  .image-zoom-btn,
-  .add-image-card,
-  .mini-download-link,
-  .merged-pdf-frame,
-  .report-writing-toolbar,
-  .editor-toolbar,
-  .live-editor-head,
-  .editor-statusbar {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
+/* v9.3 responsive Report Builder viewport fix
+   Purpose: prevent the fixed A4 live report from being clipped when the browser width is reduced.
+   This changes only the screen layout. Print/PDF rules are left untouched. */
+@media screen {
+  .workspace,
+  .content-panel,
+  .content-panel.report-builder-content,
+  .reference-builder-grid,
+  .reference-builder-grid > .report-builder-toolbox,
+  .reference-builder-grid > .live-editor-card,
+  .legacy-report-builder-scope .builder-layout,
+  .legacy-report-builder-scope .report-builder-toolbox,
+  .legacy-report-builder-scope .editor-panel {
+    min-width: 0 !important;
   }
 
-  .report-paper,
-  .report-paper *,
-  .live-editor-card,
+  .content-panel.report-builder-content {
+    overflow-x: hidden !important;
+  }
+
+  .reference-builder-grid,
+  .legacy-report-builder-scope .builder-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .reference-builder-grid > .live-editor-card,
+  .legacy-report-builder-scope .editor-panel,
   #printable-report {
-    scrollbar-width: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
 
-  .report-paper *::-webkit-scrollbar,
-  .live-editor-card *::-webkit-scrollbar,
-  #printable-report *::-webkit-scrollbar,
-  textarea::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
-    display: none !important;
-  }
-
-  textarea,
-  .rich-report-textarea,
-  .live-section-block textarea,
-  .report-paper textarea,
-  .source-detail-group,
-  .source-detail-group *,
-  .live-source-note-list,
-  .source-note-list.grouped,
-  .live-source-notes-block,
-  .live-source-notes-block *,
-  .source-note-list.grouped * {
-    overflow: visible !important;
-    overflow-x: visible !important;
+  #printable-report.live-editor-card,
+  .live-editor-card {
+    overflow-x: auto !important;
     overflow-y: visible !important;
-    max-height: none !important;
-    height: auto !important;
-  }
-
-  .rich-report-textarea,
-  .live-section-block textarea.rich-report-textarea,
-  .report-paper textarea.rich-report-textarea {
-    display: none !important;
-  }
-
-  .textarea-print-value {
-    display: block !important;
-    white-space: pre-wrap !important;
-    overflow-wrap: anywhere !important;
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
-    border: 0 !important;
-    background: transparent !important;
-    color: #10110d !important;
-    -webkit-text-fill-color: #10110d !important;
-  }
-
-  .live-source-notes-block,
-  .source-detail-group,
-  .source-detail-group ul,
-  .source-detail-group li,
-  .source-note-list.grouped,
-  .source-note-list.grouped div,
-  .source-note-list.grouped ul,
-  .source-note-list.grouped li {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
-  }
-
-  .source-detail-group,
-  .live-source-note-list.grouped div,
-  .source-note-list.grouped div {
-    display: block !important;
-    min-height: 0 !important;
-    padding: 4mm !important;
-  }
-
-  .source-detail-group ul,
-  .source-note-list.grouped ul {
-    display: block !important;
-    margin: 0 !important;
-    padding-left: 5mm !important;
-  }
-
-  .source-detail-group li,
-  .source-note-list.grouped li,
-  .live-source-note-list li {
-    display: list-item !important;
-    break-inside: auto !important;
-    page-break-inside: auto !important;
   }
 }
 
-/* Same cleanup for any HTML-to-PDF export wrapper. It does not rely on @media print. */
-.pdf-export-root .no-print,
-.pdf-export-root .section-drag-tools,
-.pdf-export-root .section-drag-tools *,
-.pdf-export-root .section-drag-handle,
-.pdf-export-root .mouse-drag-handle,
-.pdf-export-root .image-zoom-btn,
-.pdf-export-root .add-image-card,
-.pdf-export-root .mini-download-link,
-.pdf-export-root .merged-pdf-frame,
-.pdf-export-root .report-writing-toolbar,
-.pdf-export-root .editor-toolbar,
-.pdf-export-root .live-editor-head,
-.pdf-export-root .editor-statusbar {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
-.pdf-export-root textarea,
-.pdf-export-root .rich-report-textarea,
-.pdf-export-root .live-section-block textarea,
-.pdf-export-root .source-detail-group,
-.pdf-export-root .source-detail-group *,
-.pdf-export-root .live-source-note-list,
-.pdf-export-root .source-note-list.grouped,
-.pdf-export-root .live-source-notes-block,
-.pdf-export-root .live-source-notes-block *,
-.pdf-export-root .source-note-list.grouped * {
-  overflow: visible !important;
-  overflow-x: visible !important;
-  overflow-y: visible !important;
-  max-height: none !important;
-  height: auto !important;
-  scrollbar-width: none !important;
-}
-
-.pdf-export-root *::-webkit-scrollbar,
-.pdf-export-root textarea::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-  display: none !important;
-}
-
-.pdf-export-root .rich-report-textarea,
-.pdf-export-root .live-section-block textarea.rich-report-textarea,
-.pdf-export-root .report-paper textarea.rich-report-textarea {
-  display: none !important;
-}
-
-.pdf-export-root .textarea-print-value {
-  display: block !important;
-  white-space: pre-wrap !important;
-  overflow-wrap: anywhere !important;
-  overflow: visible !important;
-  max-height: none !important;
-  height: auto !important;
-  border: 0 !important;
-  background: transparent !important;
-  color: #10110d !important;
-  -webkit-text-fill-color: #10110d !important;
-}
-
-.pdf-export-root .live-source-notes-block,
-.pdf-export-root .source-detail-group,
-.pdf-export-root .source-detail-group ul,
-.pdf-export-root .source-detail-group li,
-.pdf-export-root .source-note-list.grouped,
-.pdf-export-root .source-note-list.grouped div,
-.pdf-export-root .source-note-list.grouped ul,
-.pdf-export-root .source-note-list.grouped li {
-  break-inside: auto !important;
-  page-break-inside: auto !important;
-}
-
-/* v9.2 responsive report builder fix: prevent live report from being clipped on smaller screens */
-@media (max-width: 1500px) {
-  .reference-builder-grid {
-    grid-template-columns: 1fr !important;
+/* The desktop two-column layout needs enough room for:
+   sidebar + page padding + toolbox + gap + a full A4 report page.
+   Below this width, the safest professional UX is to stack the toolbox above the report. */
+@media screen and (max-width: 1720px) {
+  .reference-builder-grid,
+  .legacy-report-builder-scope .builder-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 22px !important;
+    align-items: start !important;
   }
 
-  .builder-left {
+  .reference-builder-grid > .report-builder-toolbox,
+  .reference-builder-grid > .live-editor-card,
+  .legacy-report-builder-scope .report-builder-toolbox,
+  .legacy-report-builder-scope .editor-panel {
+    grid-column: 1 / -1 !important;
+  }
+
+  .report-builder-toolbox {
     width: 100% !important;
     max-width: 100% !important;
   }
@@ -11102,39 +10971,43 @@ body.image-viewer-open { overflow: hidden; }
   .live-editor-card {
     width: 100% !important;
     max-width: 100% !important;
-    overflow-x: auto !important;
-  }
-
-  .report-paper {
-    width: min(100%, 900px) !important;
-    max-width: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
   }
 
   .editor-toolbar {
-    width: calc(100% - 32px) !important;
+    width: calc(100% - 56px) !important;
+    max-width: 794px !important;
     margin-left: auto !important;
     margin-right: auto !important;
     overflow-x: auto !important;
   }
-}
-
-@media (max-width: 900px) {
-  .report-builder-content,
-  .content-panel.report-builder-content {
-    padding: 16px !important;
-  }
 
   .report-paper {
-    padding: 28px 18px !important;
-  }
-
-  .patient-profile-card {
-    grid-template-columns: 1fr !important;
-  }
-
-  .patient-profile-lines {
-    grid-template-columns: 1fr !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
+
+/* On very narrow screens the report keeps its correct A4 proportions, and the editor card scrolls horizontally
+   instead of cropping the page. */
+@media screen and (max-width: 900px) {
+  .content-panel.report-builder-content,
+  .content-panel {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  #printable-report.live-editor-card,
+  .live-editor-card {
+    overflow-x: auto !important;
+  }
+
+  .report-paper,
+  .nuvia-cover-page,
+  .report-paper > .live-section-block,
+  .report-paper > .attached-media-block {
+    min-width: 210mm !important;
+  }
+}
+
