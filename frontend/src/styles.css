@@ -11088,3 +11088,53 @@ body.image-viewer-open { overflow: hidden; }
   page-break-inside: auto !important;
 }
 
+/* v9.2 responsive report builder fix: prevent live report from being clipped on smaller screens */
+@media (max-width: 1500px) {
+  .reference-builder-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .builder-left {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .live-editor-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
+
+  .report-paper {
+    width: min(100%, 900px) !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .editor-toolbar {
+    width: calc(100% - 32px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow-x: auto !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .report-builder-content,
+  .content-panel.report-builder-content {
+    padding: 16px !important;
+  }
+
+  .report-paper {
+    padding: 28px 18px !important;
+  }
+
+  .patient-profile-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .patient-profile-lines {
+    grid-template-columns: 1fr !important;
+  }
+}
