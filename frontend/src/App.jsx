@@ -2135,6 +2135,7 @@ function StandaloneReportBuilder({ userPatient, patients, selectedPatientId, loa
   const [sourcePdfImages, setSourcePdfImages] = useState([]);
   const [sourceExtractedImages, setSourceExtractedImages] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
+  const [reportFullscreen, setReportFullscreen] = useState(false);
   const [localAiBusy, setLocalAiBusy] = useState(false);
   const [draggingSectionIndex, setDraggingSectionIndex] = useState(null);
   const [media, setMedia] = useState([]);
@@ -2704,6 +2705,7 @@ function StandaloneReportBuilder({ userPatient, patients, selectedPatientId, loa
         <div className="builder-actions">
           <button className="builder-btn" onClick={saveLocalDraft}><Icon name="save" />Save Draft</button>
           <button className="builder-btn gold" onClick={generateLocalAiDraft} disabled={localAiBusy}><Icon name="spark" />{localAiBusy ? "Merging..." : "Analyze PDFs"}</button>
+          <button className="builder-btn" onClick={() => setReportFullscreen(true)}><Icon name="image" />Full Screen View</button>
           <button className="builder-btn" onClick={downloadLocalReport}><Icon name="download" />Download</button>
           <button className="builder-btn" onClick={printLocalReport}>Print</button>
           <button className="builder-menu" onClick={onOpenBackendBuilder} title="Open backend-connected report builder"><Icon name="menu" /></button>
@@ -2837,10 +2839,10 @@ function StandaloneReportBuilder({ userPatient, patients, selectedPatientId, loa
           </section>
         </aside>
 
-        <section className="live-editor-card" id="printable-report">
+        <section className={`live-editor-card ${reportFullscreen ? "report-fullscreen-mode" : ""}`} id="printable-report">
           <div className="live-editor-head no-print">
             <div className="live-title"><Icon name="spark" size={18} /><strong>Live Report Editor</strong><span className="green-dot" /> <small>All changes are editable and ready for print.</small></div>
-            <button className="tips-btn">Tips</button>
+            <div className="live-editor-head-actions"><button className="tips-btn" type="button" onClick={() => setReportFullscreen(true)}>Full Screen</button>{reportFullscreen ? <button className="tips-btn close-fullscreen-btn" type="button" onClick={() => setReportFullscreen(false)}>Close</button> : null}</div>
           </div>
           <ReportEditorToolbar />
 
@@ -3828,6 +3830,7 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
   const [saving, setSaving] = useState(false);
   const [aiBusy, setAiBusy] = useState(false);
   const [draggingSectionIndex, setDraggingSectionIndex] = useState(null);
+  const [reportFullscreen, setReportFullscreen] = useState(false);
 
   function normaliseReportResponse(data) {
     return data?.report || data;
@@ -4126,6 +4129,7 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
         <div className="builder-actions">
           <button className="builder-btn" onClick={() => saveDraft("draft")} disabled={saving}><Icon name="save" />{saving ? "Saving..." : "Save Draft"}</button>
           <button className="builder-btn gold" onClick={generateAiDraft} disabled={aiBusy || !report?.id}><Icon name="spark" />{aiBusy ? "Generating..." : "Analyze PDFs"}</button>
+          <button className="builder-btn" onClick={() => setReportFullscreen(true)}><Icon name="image" />Full Screen View</button>
           <button className="builder-btn" onClick={downloadPdf}><Icon name="download" />Download</button>
           <button className="builder-btn" onClick={printReport}>Print</button>
           <button className="builder-menu" onClick={() => setScreen("cases")} title="Back to cases"><Icon name="menu" /></button>
@@ -4222,10 +4226,10 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
           </section>
         </aside>
 
-        <section className="live-editor-card" id="printable-report">
+        <section className={`live-editor-card ${reportFullscreen ? "report-fullscreen-mode" : ""}`} id="printable-report">
           <div className="live-editor-head no-print">
             <div className="live-title"><Icon name="spark" size={18} /><strong>Live Report Editor</strong><span className="green-dot" /> <small>All changes are saved when you use Save Draft or Download.</small></div>
-            <button className="tips-btn">Tips</button>
+            <div className="live-editor-head-actions"><button className="tips-btn" type="button" onClick={() => setReportFullscreen(true)}>Full Screen</button>{reportFullscreen ? <button className="tips-btn close-fullscreen-btn" type="button" onClick={() => setReportFullscreen(false)}>Close</button> : null}</div>
           </div>
           <ReportEditorToolbar />
 
