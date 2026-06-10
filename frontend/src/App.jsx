@@ -814,7 +814,7 @@ function Icon({ name, size = 20 }) {
   return <svg {...common}>{paths[name] || paths.report}</svg>;
 }
 
-function DoctorSidebar({ user, screen, setScreen, onLogout }) {
+function DoctorSidebar({ user, screen, setScreen, onLogout, isOpen = false, onClose = () => {} }) {
   const active = screen.startsWith("report-builder:") ? "report-builder" : screen;
   const [localProfile, setLocalProfile] = useState(() => getLocalProfile());
 
@@ -839,8 +839,12 @@ function DoctorSidebar({ user, screen, setScreen, onLogout }) {
     .toUpperCase();
 
   return (
-    <aside className="sidebar doctor-sidebar">
-      <Logo />
+    <aside className={`sidebar doctor-sidebar hamburger-sidebar ${isOpen ? "open" : ""}`} aria-hidden={!isOpen}>
+      <div className="sidebar-mobile-head">
+        <Logo />
+        <button className="sidebar-close-btn" type="button" onClick={onClose} aria-label="Close sidebar">×</button>
+      </div>
+      <div className="sidebar-desktop-logo"><Logo /></div>
       <div className="doctor-profile-card sidebar-profile-no-arrow">
         <div className="doctor-avatar sidebar-avatar-image">
           {localProfile.avatar ? <img src={localProfile.avatar} alt="Doctor profile" /> : sidebarInitials || "DR"}
@@ -1777,196 +1781,25 @@ function ExtractedTablesPreview({ tables }) {
 }
 
 function OriginalReportBuilder({ token, patients, selectedPatientId, setSelectedPatientId, refresh, user }) {
-  const [patient, setPatient] = useState(null);
-  const [report, setReport] = useState(null);
-  const [editable, setEditable] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [imageViewer, setImageViewer] = useState(null);
-  const [reportFullscreen, setReportFullscreen] = useState(false);
-
+  const [patient, setPatient] = useState(null); const [report, setReport] = useState(null); const [editable, setEditable] = useState(null); const [busy, setBusy] = useState(false); const [msg,setMsg]=useState(""); const [imageViewer, setImageViewer] = useState(null);
   const selectedPatient = patients.find(p => p.id === Number(selectedPatientId)) || null;
-
-  const loadPatient = async id => {
-    if (!id) return;
-    const p = await api(`/api/patients/${id}`, {}, token);
-    setPatient(p);
-    if (!report && p.reports?.[0]) loadReport(p.reports[0].id);
-  };
-
-  const loadReport = async id => {
-    const data = await api(`/api/reports/${id}`, {}, token);
-    const safeEditable = normaliseLowConfidenceImages(data.editable_report, data.report_type);
-    setReport(data);
-    setEditable(safeEditable);
-  };
-
-  useEffect(() => {
-    if (selectedPatientId) loadPatient(selectedPatientId);
-  }, [selectedPatientId]);
-
-  const refreshPatient = async id => {
-    const p = await api(`/api/patients/${id}`, {}, token);
-    setPatient(p);
-    refresh();
-  };
-
-  const save = async (status = "draft") => {
-    if (!report) return;
-    setBusy(true);
-    try {
-      const data = await api(`/api/reports/${report.id}/save-${status}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ editable_report: editable, doctor_opinion: editable?.doctor_opinion || "", status })
-      }, token);
-      const safeEditable = normaliseLowConfidenceImages(data.report.editable_report, data.report.report_type);
-      setReport(data.report);
-      setEditable(safeEditable);
-      setMsg("Saved");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const enhance = async () => {
-    if (!report) return;
-    setBusy(true);
-    try {
-      const data = await api(`/api/reports/${report.id}/ai-enhance?use_vision=true`, { method: "POST" }, token);
-      const safeEditable = normaliseLowConfidenceImages(data.report.editable_report, data.report.report_type);
-      setReport(data.report);
-      setEditable(safeEditable);
-      setMsg("AI metadata enhanced");
-    } finally {
-      setBusy(false);
-    }
-  };
-
+  const loadPatient = async id => { if (!id) return; const p = await api(`/api/patients/${id}`, {}, token); setPatient(p); if (!report && p.reports?.[0]) loadReport(p.reports[0].id); };
+  const loadReport = async id => { const data = await api(`/api/reports/${id}`, {}, token); const safeEditable = normaliseLowConfidenceImages(data.editable_report, data.report_type); setReport(data); setEditable(safeEditable); };
+  useEffect(()=>{ if (selectedPatientId) loadPatient(selectedPatientId); }, [selectedPatientId]);
+  const refreshPatient = async id => { const p = await api(`/api/patients/${id}`, {}, token); setPatient(p); refresh(); };
+  const save = async (status="draft") => { if (!report) return; setBusy(true); try { const data = await api(`/api/reports/${report.id}/save-${status}`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({editable_report: editable, doctor_opinion: editable?.doctor_opinion || "", status})}, token); const safeEditable = normaliseLowConfidenceImages(data.report.editable_report, data.report.report_type); setReport(data.report); setEditable(safeEditable); setMsg("Saved"); } finally { setBusy(false); }};
+  const enhance = async () => { if (!report) return; setBusy(true); try { const data = await api(`/api/reports/${report.id}/ai-enhance?use_vision=true`, {method:"POST"}, token); const safeEditable = normaliseLowConfidenceImages(data.report.editable_report, data.report.report_type); setReport(data.report); setEditable(safeEditable); setMsg("AI metadata enhanced"); } finally { setBusy(false); }};
   const sections = editable?.sections || [];
   const imageBankSection = sections.find(isImageGallerySection);
   const imageBankImages = imageBankSection?.images || [];
   const handleImageDragStart = (e, img, sourceSectionId) => setImageDragPayload(e, img, sourceSectionId);
   const moveImageToSection = (imageKey, targetSectionId) => setEditable(prev => moveImageInEditable(prev, imageKey, targetSectionId));
   const moveImageToBank = (imageKey) => setEditable(prev => moveImageInEditable(prev, imageKey, "__image_bank__"));
-  const openImageViewer = (images, index = 0) => {
-    const list = (images || []).filter((img) => img?.url);
-    if (list.length) setImageViewer({ images: list, index });
-  };
+  const openImageViewer = (images, index = 0) => { const list = (images || []).filter((img) => img?.url); if (list.length) setImageViewer({ images: list, index }); };
 
-  const renderReportPaper = (extraClassName = "") => {
-    if (!editable) return <div className="empty-state">Select a patient and upload PDFs to create a report.</div>;
-
-    return (
-      <article className={`report-paper ${extraClassName}`.trim()}>
-        <ReportCoverPage patient={patient} report={report} editable={editable} setEditable={setEditable} user={user} />
-        <ReportExaminationsPage editable={editable} report={report} />
-
-        {(editable.source_warnings || report?.source_warnings || []).length ? (
-          <section className="source-warning-block">
-            <h3>Source Patient Check</h3>
-            {(editable.source_warnings || report?.source_warnings || []).map((w, i) => <p key={i}>{w}</p>)}
-          </section>
-        ) : null}
-
-        <h2>Doctor Opinion <span className="pill">Required</span></h2>
-        <AutoResizeTextarea
-          id={extraClassName ? "doctor-opinion-fullscreen" : "doctor-opinion"}
-          value={editable.doctor_opinion || ""}
-          placeholder="Click here to add doctor opinion..."
-          onChange={(value) => setEditable({ ...editable, doctor_opinion: value })}
-        />
-
-        {sections.map((s, idx) => (
-          <SectionBlock
-            key={s.id || idx}
-            section={s}
-            onImageDrop={moveImageToSection}
-            onImageDragStart={handleImageDragStart}
-            onMoveImageToBank={moveImageToBank}
-            onPreview={openImageViewer}
-            onChange={(next) => {
-              const updated = [...sections];
-              updated[idx] = next;
-              setEditable({ ...editable, sections: updated });
-            }}
-          />
-        ))}
-
-        <MeasurementsBlock measurements={editable?.measurements || report?.measurements || []} />
-        <ExtractedTablesPreview tables={report?.extracted_tables || editable?.extracted_tables || []} />
-        <h2>Limitations</h2>
-        <p>{editable.limitations}</p>
-      </article>
-    );
-  };
-
-  return (
-    <>
-      <header className="page-head">
-        <div>
-          <p className="crumb">Dashboard › Report Builder</p>
-          <h1>Editable Report Builder <Icon name="spark" /></h1>
-          <p>Create, structure and refine AI-powered medical reports with separated patient/report storage.</p>
-        </div>
-        <div className="head-actions">
-          <button onClick={() => save('draft')} disabled={!report || busy}><Icon name="save" /> Save Draft</button>
-          <button className="gold" onClick={enhance} disabled={!report || busy}><Icon name="spark" /> Generate AI Draft</button>
-          <button className="light" onClick={() => setReportFullscreen(true)} disabled={!editable}><Icon name="image" /> Full Screen View</button>
-          <button className="light" onClick={() => window.print()}><Icon name="print" /> Print</button>
-        </div>
-      </header>
-
-      <div className="builder-layout">
-        <aside className="builder-left report-builder-toolbox">
-          <div className="toolbox-header"><span className="toolbox-kicker">Doctor Toolbox</span><strong>Report controls</strong><small>Image bank, uploads and sections stay available while you scroll.</small></div>
-          <div className="case-select">
-            <h3>Patient Case</h3>
-            <select value={selectedPatientId || ""} onChange={e => { setSelectedPatientId(e.target.value); setReport(null); setEditable(null); }}>
-              <option value="">Select patient</option>
-              {patients.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}
-            </select>
-            {patient?.reports?.length ? (
-              <select value={report?.id || ""} onChange={e => loadReport(e.target.value)}>
-                <option value="">Select report</option>
-                {patient.reports.map(r => <option key={r.id} value={r.id}>Report #{r.id} • {r.image_count} images</option>)}
-              </select>
-            ) : <p>No reports yet. Upload PDFs to create one.</p>}
-          </div>
-          <UploadPanel token={token} patient={patient || selectedPatient} report={report} setReport={(r) => { const safeEditable = normaliseLowConfidenceImages(r.editable_report, r.report_type); setReport(r); setEditable(safeEditable); }} refreshPatient={refreshPatient} />
-          {editable && <ImageBankPanel images={imageBankImages} onImageDragStart={handleImageDragStart} onDropBack={moveImageToBank} onPreview={openImageViewer} />}
-          <div className="section-index"><h3>Report Sections</h3>{sections.map(s => <span key={s.id}>{s.title} {s.images?.length ? `(${s.images.length} images)` : ''}</span>)}</div>
-        </aside>
-
-        <main className="editor-panel">
-          <div className="live-title live-title-with-action">
-            <span className="live-title-main"><Icon name="spark" /><strong>Live Report Editor</strong><span className="green-dot" /><small>All changes are editable and ready for print.</small></span>
-            <button className="tips-btn report-fullscreen-inline-btn no-print" onClick={() => setReportFullscreen(true)} disabled={!editable}>Full Screen</button>
-          </div>
-          <div className="toolbar"><b>Paragraph</b><button>B</button><button>I</button><button>U</button><button>↶</button><button>↷</button></div>
-          {renderReportPaper()}
-        </main>
-      </div>
-
-      {reportFullscreen && editable && (
-        <div className="report-fullscreen-modal no-print" role="dialog" aria-modal="true">
-          <div className="report-fullscreen-header">
-            <div>
-              <strong>Full Screen Report Preview</strong>
-              <span>Use this view for demo review and close it to return to editing.</span>
-            </div>
-            <button className="builder-btn" onClick={() => setReportFullscreen(false)}>Close</button>
-          </div>
-          <div className="report-fullscreen-body">
-            {renderReportPaper("report-paper-fullscreen")}
-          </div>
-        </div>
-      )}
-
-      {imageViewer && <ImageViewerModal images={imageViewer.images} initialIndex={imageViewer.index} onClose={() => setImageViewer(null)} />}
-      {msg && <div className="toast">{msg}</div>}
-    </>
-  );
+  return <><header className="page-head"><div><p className="crumb">Dashboard › Report Builder</p><h1>Editable Report Builder <Icon name="spark"/></h1><p>Create, structure and refine AI-powered medical reports with separated patient/report storage.</p></div><div className="head-actions"><button onClick={()=>save('draft')} disabled={!report || busy}><Icon name="save"/> Save Draft</button><button className="gold" onClick={enhance} disabled={!report || busy}><Icon name="spark"/> Generate AI Draft</button><button className="light" onClick={()=>window.print()}><Icon name="print"/> Print</button></div></header>
+    <div className="builder-layout"><aside className="builder-left report-builder-toolbox"><div className="toolbox-header"><span className="toolbox-kicker">Doctor Toolbox</span><strong>Report controls</strong><small>Image bank, uploads and sections stay available while you scroll.</small></div><div className="case-select"><h3>Patient Case</h3><select value={selectedPatientId || ""} onChange={e=>{setSelectedPatientId(e.target.value); setReport(null); setEditable(null);}}><option value="">Select patient</option>{patients.map(p=><option key={p.id} value={p.id}>{p.full_name}</option>)}</select>{patient?.reports?.length ? <select value={report?.id || ""} onChange={e=>loadReport(e.target.value)}><option value="">Select report</option>{patient.reports.map(r=><option key={r.id} value={r.id}>Report #{r.id} • {r.image_count} images</option>)}</select> : <p>No reports yet. Upload PDFs to create one.</p>}</div><UploadPanel token={token} patient={patient || selectedPatient} report={report} setReport={(r)=>{const safeEditable = normaliseLowConfidenceImages(r.editable_report, r.report_type); setReport(r); setEditable(safeEditable)}} refreshPatient={refreshPatient}/>{editable && <ImageBankPanel images={imageBankImages} onImageDragStart={handleImageDragStart} onDropBack={moveImageToBank} onPreview={openImageViewer}/>}<div className="section-index"><h3>Report Sections</h3>{sections.map(s=><span key={s.id}>{s.title} {s.images?.length ? `(${s.images.length} images)` : ''}</span>)}</div></aside>
+    <main className="editor-panel"><div className="live-title"><Icon name="spark"/><strong>Live Report Editor</strong><span className="green-dot"/><small>All changes are editable and ready for print.</small></div><div className="toolbar"><b>Paragraph</b><button>B</button><button>I</button><button>U</button><button>↶</button><button>↷</button></div>{editable ? <article className="report-paper"><ReportCoverPage patient={patient} report={report} editable={editable} setEditable={setEditable} user={user}/><ReportExaminationsPage editable={editable} report={report}/>{(editable.source_warnings || report?.source_warnings || []).length ? <section className="source-warning-block"><h3>Source Patient Check</h3>{(editable.source_warnings || report?.source_warnings || []).map((w,i)=><p key={i}>{w}</p>)}</section> : null}<h2>Doctor Opinion <span className="pill">Required</span></h2><AutoResizeTextarea id="doctor-opinion" value={editable.doctor_opinion || ""} placeholder="Click here to add doctor opinion..." onChange={(value)=>setEditable({...editable, doctor_opinion:value})} />{sections.map((s,idx)=><SectionBlock key={s.id || idx} section={s} onImageDrop={moveImageToSection} onImageDragStart={handleImageDragStart} onMoveImageToBank={moveImageToBank} onPreview={openImageViewer} onChange={(next)=>{ const updated=[...sections]; updated[idx]=next; setEditable({...editable, sections:updated}); }}/>) }<MeasurementsBlock measurements={editable?.measurements || report?.measurements || []}/><ExtractedTablesPreview tables={report?.extracted_tables || editable?.extracted_tables || []}/><h2>Limitations</h2><p>{editable.limitations}</p></article> : <div className="empty-state">Select a patient and upload PDFs to create a report.</div>}</main></div>{imageViewer && <ImageViewerModal images={imageViewer.images} initialIndex={imageViewer.index} onClose={()=>setImageViewer(null)}/>} {msg && <div className="toast">{msg}</div>}</>
 }
 
 function LegacyReportBuilderScreen({ screen, user, notify, setScreen }) {
@@ -2020,9 +1853,32 @@ function LegacyReportBuilderScreen({ screen, user, notify, setScreen }) {
 
 
 function Workspace({ user, screen, setScreen, onLogout, notify }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  function navigateFromSidebar(nextScreen, options = {}) {
+    setScreen(nextScreen, options);
+    setSidebarOpen(false);
+  }
+
   return (
-    <section className="workspace">
-      <DoctorSidebar user={user} screen={screen} setScreen={setScreen} onLogout={onLogout} />
+    <section className={`workspace hamburger-workspace ${sidebarOpen ? "sidebar-is-open" : ""}`}>
+      <button
+        className="hamburger-toggle no-print"
+        type="button"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open sidebar"
+      >
+        <Icon name="list" size={22} />
+      </button>
+      <div className="sidebar-backdrop no-print" onClick={() => setSidebarOpen(false)} />
+      <DoctorSidebar
+        user={user}
+        screen={screen}
+        setScreen={navigateFromSidebar}
+        onLogout={onLogout}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <section className="content-panel">
         {screen === "dashboard" && <DoctorDashboardPage user={user} notify={notify} setScreen={setScreen} />}
@@ -3999,6 +3855,7 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
   const [saving, setSaving] = useState(false);
   const [aiBusy, setAiBusy] = useState(false);
   const [draggingSectionIndex, setDraggingSectionIndex] = useState(null);
+  const [reportFullscreen, setReportFullscreen] = useState(false);
 
   function normaliseReportResponse(data) {
     return data?.report || data;
@@ -4297,6 +4154,7 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
         <div className="builder-actions">
           <button className="builder-btn" onClick={() => saveDraft("draft")} disabled={saving}><Icon name="save" />{saving ? "Saving..." : "Save Draft"}</button>
           <button className="builder-btn gold" onClick={generateAiDraft} disabled={aiBusy || !report?.id}><Icon name="spark" />{aiBusy ? "Generating..." : "Analyze PDFs"}</button>
+          <button className="builder-btn" onClick={() => setReportFullscreen(true)}><Icon name="image" />Full Screen View</button>
           <button className="builder-btn" onClick={downloadPdf}><Icon name="download" />Download</button>
           <button className="builder-btn" onClick={printReport}>Print</button>
           <button className="builder-menu" onClick={() => setScreen("cases")} title="Back to cases"><Icon name="menu" /></button>
@@ -4396,7 +4254,10 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
         <section className="live-editor-card" id="printable-report">
           <div className="live-editor-head no-print">
             <div className="live-title"><Icon name="spark" size={18} /><strong>Live Report Editor</strong><span className="green-dot" /> <small>All changes are saved when you use Save Draft or Download.</small></div>
-            <button className="tips-btn">Tips</button>
+            <div className="live-editor-head-actions">
+              <button className="tips-btn" type="button" onClick={() => setReportFullscreen(true)}>Full Screen</button>
+              <button className="tips-btn" type="button">Tips</button>
+            </div>
           </div>
           <ReportEditorToolbar />
 
@@ -4456,6 +4317,65 @@ function ReportBuilderPage({ patientId, reportId, user, notify, setScreen }) {
           </div>
         </section>
       </div>
+
+      {reportFullscreen && (
+        <div className="fullscreen-report-modal no-print" role="dialog" aria-modal="true" aria-label="Full screen report preview">
+          <div className="fullscreen-report-panel">
+            <div className="fullscreen-report-head">
+              <div>
+                <strong>Full Screen Report Preview</strong>
+                <span>Use this view for demo and visual checking. Close it to continue editing in the builder.</span>
+              </div>
+              <button type="button" onClick={() => setReportFullscreen(false)}>Close</button>
+            </div>
+            <div className="fullscreen-report-scroll">
+              <article className="report-paper fullscreen-report-paper">
+                <ReportCoverPage patient={patient || editable.patient || {}} report={report || editable} editable={editable} setEditable={setEditable} user={user} />
+                <ReportExaminationsPage editable={editable} report={report || editable}/>
+
+                <EditableReportBlock
+                  id="doctor-opinion-fullscreen"
+                  required
+                  title="Doctor Opinion"
+                  value={editable.doctor_opinion || ""}
+                  placeholder="Click here to add doctor opinion..."
+                  onChange={(value) => setEditable({ ...editable, doctor_opinion: value })}
+                />
+
+                {(editable.sections || []).map((section, index) => {
+                  const sectionType = String(section?.type || "").toLowerCase();
+                  if (["source_text", "images"].includes(sectionType)) return null;
+                  if (sectionType === "tables") return <LiveStructuredTablesSection key={`fs-${section.id || index}`} section={section} />;
+                  if (sectionType === "source_notes") return <LiveSourceNotesSection key={`fs-${section.id || index}`} section={section} />;
+                  return (
+                    <EditableReportBlock
+                      key={`fs-${section.id || index}`}
+                      title={section.title || `Section ${index + 1}`}
+                      value={section.content || ""}
+                      placeholder={`Click here to write ${section.title || "this section"}...`}
+                      onChange={(value) => updateSection(index, "content", value)}
+                    />
+                  );
+                })}
+
+                <section className="attached-media-block">
+                  <h3>Attached Media <span>(Images)</span></h3>
+                  <div className="attached-media-grid">
+                    {galleryImages.length ? galleryImages.slice(0, 4).map((img, idx) => <img key={`fs-${img.url}-${idx}`} src={img.url} alt={img.filename || `image ${idx + 1}`} />) : [0,1,2,3].map((i) => <div className="image-placeholder" key={`fs-placeholder-${i}`}><Icon name="image" size={34} /></div>)}
+                  </div>
+                </section>
+
+                <EditableReportBlock
+                  title="Limitations"
+                  value={editable.limitations || ""}
+                  placeholder="Add limitations or footer note..."
+                  onChange={(value) => setEditable({ ...editable, limitations: value })}
+                />
+              </article>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

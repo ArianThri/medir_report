@@ -10903,122 +10903,460 @@ body.image-viewer-open { overflow: hidden; }
   }
 }
 
+/* v9.4 final responsive report builder fix
+   Problem fixed: the live A4 report was being clipped on smaller browser widths because
+   the fixed 280px sidebar still consumed space and the A4 preview kept its full width.
+   This is screen-only. It does not change print/PDF layout. */
+@media screen and (max-width: 1180px) {
+  .workspace {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
 
-/* v9.5 fullscreen report preview demo fix
-   Keeps the previous report-builder style unchanged and only adds a modal preview layer. */
-.live-title-with-action {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 14px !important;
-  flex-wrap: wrap !important;
+  .sidebar,
+  .sidebar.doctor-sidebar,
+  .doctor-sidebar {
+    position: relative !important;
+    top: auto !important;
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .content-panel,
+  .content-panel.report-builder-content,
+  .report-builder-content {
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    padding: 18px !important;
+    overflow-x: hidden !important;
+  }
+
+  .builder-topbar {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .builder-actions {
+    justify-content: flex-start !important;
+  }
+
+  .reference-builder-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    gap: 18px !important;
+    overflow: visible !important;
+  }
+
+  .builder-left,
+  .report-builder-toolbox,
+  .live-editor-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .live-editor-card {
+    overflow: visible !important;
+  }
+
+  .editor-toolbar {
+    width: calc(100% - 28px) !important;
+    max-width: calc(100% - 28px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow-x: auto !important;
+    transform: translateY(12px) !important;
+  }
+
+  .report-paper {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: visible !important;
+  }
+
+  .report-paper > .nuvia-cover-page,
+  .report-paper > .nuvia-exams-page {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+  }
 }
 
-.live-title-main {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 10px !important;
+@media screen and (max-width: 860px) {
+  .content-panel,
+  .content-panel.report-builder-content,
+  .report-builder-content {
+    padding: 14px !important;
+  }
+
+  .report-paper {
+    zoom: .94;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .report-paper {
+    zoom: .86;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .report-paper {
+    zoom: .76;
+  }
+
+  .editor-toolbar {
+    zoom: .92;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .report-paper {
+    zoom: .66;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .report-paper {
+    zoom: .56;
+  }
+}
+
+/* v9.4 demo layout fix: hamburger sidebar + flexible report builder toolbox
+   Keeps the previous visual style, but removes the permanent sidebar width from the page. */
+.hamburger-workspace,
+.workspace.hamburger-workspace {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.hamburger-workspace .content-panel,
+.hamburger-workspace .content-panel.report-builder-content {
+  width: 100% !important;
+  max-width: none !important;
+  padding-left: clamp(18px, 3vw, 38px) !important;
+  padding-right: clamp(18px, 3vw, 38px) !important;
+}
+
+.hamburger-toggle {
+  position: fixed;
+  left: 18px;
+  top: 18px;
+  z-index: 10020;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(215, 163, 58, .42);
+  border-radius: 15px;
+  background: rgba(5, 6, 5, .94);
+  color: #d7a33a;
+  box-shadow: 0 14px 34px rgba(0,0,0,.20);
+  backdrop-filter: blur(10px);
+}
+
+.hamburger-toggle:hover {
+  transform: translateY(-1px);
+  background: #050605;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10010;
+  background: rgba(0, 0, 0, .44);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+
+.sidebar-is-open .sidebar-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar.doctor-sidebar.hamburger-sidebar,
+.doctor-sidebar.hamburger-sidebar {
+  position: fixed !important;
+  inset: 0 auto 0 0 !important;
+  z-index: 10030 !important;
+  width: min(310px, 88vw) !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  transform: translateX(-108%);
+  transition: transform .22s ease;
+  box-shadow: 24px 0 70px rgba(0,0,0,.28) !important;
+}
+
+.sidebar.doctor-sidebar.hamburger-sidebar.open,
+.doctor-sidebar.hamburger-sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-mobile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sidebar-desktop-logo {
+  display: none;
+}
+
+.sidebar-close-btn {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.sidebar-close-btn:hover {
+  background: rgba(215,163,58,.18);
+  color: #d7a33a;
+}
+
+/* Keep top title clear of the floating hamburger button. */
+.hamburger-workspace .builder-topbar,
+.hamburger-workspace .page-header {
+  padding-left: 54px;
+}
+
+/* Flexible toolbox/report split. The toolbox no longer reserves a hard fixed width. */
+.reference-builder-grid {
+  grid-template-columns: minmax(280px, clamp(300px, 32vw, 520px)) minmax(0, 1fr) !important;
+  gap: clamp(16px, 2vw, 24px) !important;
+  width: 100% !important;
+}
+
+.builder-left,
+.live-editor-card,
+.report-paper,
+.editor-toolbar {
   min-width: 0 !important;
 }
 
-.report-fullscreen-inline-btn {
-  min-height: 32px !important;
-  padding: 0 12px !important;
-  border: 1px solid rgba(215, 163, 58, .32) !important;
-  border-radius: 10px !important;
-  background: #fffaf0 !important;
-  color: #9b690f !important;
-  font-weight: 900 !important;
-  box-shadow: none !important;
+.builder-left {
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
-.report-fullscreen-inline-btn:disabled {
-  opacity: .45 !important;
-  cursor: not-allowed !important;
+.builder-step-card,
+.patient-selector-card {
+  min-width: 0 !important;
 }
 
-.report-fullscreen-modal {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 99998 !important;
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) !important;
-  background: rgba(9, 9, 7, .78) !important;
-  backdrop-filter: blur(10px) !important;
+.live-editor-card {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
-.report-fullscreen-header {
-  min-height: 72px !important;
-  padding: 14px 24px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 18px !important;
-  background: #fffdf8 !important;
-  border-bottom: 1px solid rgba(215, 163, 58, .28) !important;
-  box-shadow: 0 12px 30px rgba(0,0,0,.12) !important;
+.live-editor-card .report-paper {
+  max-width: calc(100% - 56px) !important;
+  overflow: hidden !important;
 }
 
-.report-fullscreen-header div {
-  display: grid !important;
-  gap: 3px !important;
+.live-editor-card .editor-toolbar {
+  max-width: calc(100% - 92px) !important;
+  overflow-x: auto !important;
 }
 
-.report-fullscreen-header strong {
-  color: #10110d !important;
-  font-size: 16px !important;
-  font-weight: 950 !important;
-}
-
-.report-fullscreen-header span {
-  color: #756f64 !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-}
-
-.report-fullscreen-body {
-  min-height: 0 !important;
-  overflow: auto !important;
-  padding: 28px !important;
-  background: radial-gradient(circle at 20% 0%, rgba(215,163,58,.18), transparent 30%), #f0e8d8 !important;
-}
-
-.report-fullscreen-body .report-paper {
-  width: 210mm !important;
-  max-width: 210mm !important;
-  min-width: 210mm !important;
-  margin: 0 auto 28px !important;
-  transform: none !important;
-  zoom: 1 !important;
-}
-
-@media screen and (max-width: 980px) {
-  .report-fullscreen-body {
-    padding: 18px !important;
+/* Stack the toolbox above the report before the A4 preview gets clipped. */
+@media (max-width: 1280px) {
+  .reference-builder-grid {
+    grid-template-columns: 1fr !important;
   }
 
-  .report-fullscreen-body .report-paper {
-    transform: scale(.84) !important;
-    transform-origin: top center !important;
-    margin-bottom: -110px !important;
+  .live-editor-card .report-paper {
+    width: min(100% - 36px, 980px) !important;
+    max-width: min(100% - 36px, 980px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .live-editor-card .editor-toolbar {
+    width: min(100% - 36px, 980px) !important;
+    max-width: min(100% - 36px, 980px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
 
-@media screen and (max-width: 760px) {
-  .report-fullscreen-header {
-    align-items: flex-start !important;
-    flex-direction: column !important;
+@media (max-width: 760px) {
+  .hamburger-workspace .content-panel,
+  .hamburger-workspace .content-panel.report-builder-content {
+    padding: 14px !important;
   }
 
-  .report-fullscreen-body .report-paper {
-    transform: scale(.68) !important;
-    margin-bottom: -210px !important;
+  .hamburger-workspace .builder-topbar,
+  .hamburger-workspace .page-header {
+    padding-left: 52px;
+  }
+
+  .hamburger-toggle {
+    left: 12px;
+    top: 12px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .builder-actions {
+    justify-content: flex-start !important;
+  }
+
+  .live-editor-card .report-paper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .live-editor-card .editor-toolbar {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
   }
 }
 
 @media print {
-  .report-fullscreen-modal,
-  .report-fullscreen-inline-btn {
+  .hamburger-toggle,
+  .sidebar-backdrop,
+  .sidebar-mobile-head,
+  .sidebar-close-btn,
+  .hamburger-sidebar {
     display: none !important;
+  }
+
+  .hamburger-workspace .builder-topbar,
+  .hamburger-workspace .page-header,
+  .hamburger-workspace .content-panel,
+  .hamburger-workspace .content-panel.report-builder-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* v9.5 full-screen report preview for demos */
+.live-editor-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fullscreen-report-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background: rgba(8, 8, 6, .78);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.fullscreen-report-panel {
+  width: min(1500px, 96vw);
+  height: min(94vh, 1100px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #f7f2e8;
+  border: 1px solid rgba(215, 163, 58, .42);
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(0,0,0,.38);
+  overflow: hidden;
+}
+
+.fullscreen-report-head {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #090a08;
+  color: white;
+  border-bottom: 1px solid rgba(215, 163, 58, .35);
+}
+
+.fullscreen-report-head strong {
+  display: block;
+  font-size: 15px;
+}
+
+.fullscreen-report-head span {
+  display: block;
+  color: rgba(255,255,255,.62);
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.fullscreen-report-head button {
+  min-height: 40px;
+  border: 1px solid rgba(215, 163, 58, .55);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d7a33a, #9b690f);
+  color: #fff;
+  padding: 0 18px;
+  font-weight: 900;
+}
+
+.fullscreen-report-scroll {
+  overflow: auto;
+  padding: 28px;
+}
+
+.fullscreen-report-paper {
+  width: min(1050px, 100%) !important;
+  max-width: 1050px !important;
+  margin: 0 auto 28px !important;
+}
+
+@media (max-width: 760px) {
+  .fullscreen-report-modal {
+    padding: 8px;
+  }
+  .fullscreen-report-panel {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .fullscreen-report-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .fullscreen-report-scroll {
+    padding: 10px;
   }
 }
