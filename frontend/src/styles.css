@@ -10903,111 +10903,134 @@ body.image-viewer-open { overflow: hidden; }
   }
 }
 
-/* v9.3 responsive Report Builder viewport fix
-   Purpose: prevent the fixed A4 live report from being clipped when the browser width is reduced.
-   This changes only the screen layout. Print/PDF rules are left untouched. */
-@media screen {
-  .workspace,
-  .content-panel,
-  .content-panel.report-builder-content,
-  .reference-builder-grid,
-  .reference-builder-grid > .report-builder-toolbox,
-  .reference-builder-grid > .live-editor-card,
-  .legacy-report-builder-scope .builder-layout,
-  .legacy-report-builder-scope .report-builder-toolbox,
-  .legacy-report-builder-scope .editor-panel {
-    min-width: 0 !important;
-  }
-
-  .content-panel.report-builder-content {
+/* v9.4 final responsive report builder fix
+   Problem fixed: the live A4 report was being clipped on smaller browser widths because
+   the fixed 280px sidebar still consumed space and the A4 preview kept its full width.
+   This is screen-only. It does not change print/PDF layout. */
+@media screen and (max-width: 1180px) {
+  .workspace {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    max-width: 100vw !important;
     overflow-x: hidden !important;
   }
 
-  .reference-builder-grid,
-  .legacy-report-builder-scope .builder-layout {
+  .sidebar,
+  .sidebar.doctor-sidebar,
+  .doctor-sidebar {
+    position: relative !important;
+    top: auto !important;
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .content-panel,
+  .content-panel.report-builder-content,
+  .report-builder-content {
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    padding: 18px !important;
+    overflow-x: hidden !important;
+  }
+
+  .builder-topbar {
     width: 100% !important;
     max-width: 100% !important;
   }
 
-  .reference-builder-grid > .live-editor-card,
-  .legacy-report-builder-scope .editor-panel,
-  #printable-report {
+  .builder-actions {
+    justify-content: flex-start !important;
+  }
+
+  .reference-builder-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    gap: 18px !important;
+    overflow: visible !important;
+  }
+
+  .builder-left,
+  .report-builder-toolbox,
+  .live-editor-card {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
   }
 
-  #printable-report.live-editor-card,
   .live-editor-card {
-    overflow-x: auto !important;
-    overflow-y: visible !important;
-  }
-}
-
-/* The desktop two-column layout needs enough room for:
-   sidebar + page padding + toolbox + gap + a full A4 report page.
-   Below this width, the safest professional UX is to stack the toolbox above the report. */
-@media screen and (max-width: 1720px) {
-  .reference-builder-grid,
-  .legacy-report-builder-scope .builder-layout {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 22px !important;
-    align-items: start !important;
-  }
-
-  .reference-builder-grid > .report-builder-toolbox,
-  .reference-builder-grid > .live-editor-card,
-  .legacy-report-builder-scope .report-builder-toolbox,
-  .legacy-report-builder-scope .editor-panel {
-    grid-column: 1 / -1 !important;
-  }
-
-  .report-builder-toolbox {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .live-editor-card {
-    width: 100% !important;
-    max-width: 100% !important;
+    overflow: visible !important;
   }
 
   .editor-toolbar {
-    width: calc(100% - 56px) !important;
-    max-width: 794px !important;
+    width: calc(100% - 28px) !important;
+    max-width: calc(100% - 28px) !important;
     margin-left: auto !important;
     margin-right: auto !important;
     overflow-x: auto !important;
+    transform: translateY(12px) !important;
   }
 
   .report-paper {
     width: 210mm !important;
     max-width: 210mm !important;
+    min-width: 210mm !important;
     margin-left: auto !important;
     margin-right: auto !important;
-  }
-}
-
-/* On very narrow screens the report keeps its correct A4 proportions, and the editor card scrolls horizontally
-   instead of cropping the page. */
-@media screen and (max-width: 900px) {
-  .content-panel.report-builder-content,
-  .content-panel {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
+    overflow: visible !important;
   }
 
-  #printable-report.live-editor-card,
-  .live-editor-card {
-    overflow-x: auto !important;
-  }
-
-  .report-paper,
-  .nuvia-cover-page,
-  .report-paper > .live-section-block,
-  .report-paper > .attached-media-block {
+  .report-paper > .nuvia-cover-page,
+  .report-paper > .nuvia-exams-page {
+    width: 210mm !important;
     min-width: 210mm !important;
+    max-width: 210mm !important;
   }
 }
 
+@media screen and (max-width: 860px) {
+  .content-panel,
+  .content-panel.report-builder-content,
+  .report-builder-content {
+    padding: 14px !important;
+  }
+
+  .report-paper {
+    zoom: .94;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .report-paper {
+    zoom: .86;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .report-paper {
+    zoom: .76;
+  }
+
+  .editor-toolbar {
+    zoom: .92;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .report-paper {
+    zoom: .66;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .report-paper {
+    zoom: .56;
+  }
+}
